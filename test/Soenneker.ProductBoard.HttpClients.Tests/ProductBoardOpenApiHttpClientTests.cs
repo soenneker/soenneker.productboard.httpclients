@@ -1,20 +1,19 @@
 using Soenneker.ProductBoard.HttpClients.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.ProductBoard.HttpClients.Tests;
 
-[Collection("Collection")]
-public sealed class ProductBoardOpenApiHttpClientTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class ProductBoardOpenApiHttpClientTests : HostedUnitTest
 {
     private readonly IProductBoardOpenApiHttpClient _httpclient;
 
-    public ProductBoardOpenApiHttpClientTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public ProductBoardOpenApiHttpClientTests(Host host) : base(host)
     {
         _httpclient = Resolve<IProductBoardOpenApiHttpClient>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
