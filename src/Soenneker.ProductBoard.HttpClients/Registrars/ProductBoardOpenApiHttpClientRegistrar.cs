@@ -6,7 +6,7 @@ using Soenneker.Utils.HttpClientCache.Registrar;
 namespace Soenneker.ProductBoard.HttpClients.Registrars;
 
 /// <summary>
-/// Registers the OpenAPI HttpClient wrapper for dependency injection.
+/// Registers the Productboard API v2 HTTP client provider.
 /// </summary>
 public static class ProductBoardOpenApiHttpClientRegistrar
 {

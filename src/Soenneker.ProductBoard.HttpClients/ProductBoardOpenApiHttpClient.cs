@@ -11,13 +11,14 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.ProductBoard.HttpClients;
 
-///<inheritdoc cref="IProductBoardOpenApiHttpClient"/>
 public sealed class ProductBoardOpenApiHttpClient : IProductBoardOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
     private readonly IConfiguration _config;
 
-    private const string _prodBaseUrl = "https://api.productboard.com/";
+    private readonly string _cacheKey = $"{nameof(ProductBoardOpenApiHttpClient)}:{Guid.NewGuid():N}";
+
+    private const string _prodBaseUrl = "https://api.productboard.com/v2/";
 
     public ProductBoardOpenApiHttpClient(IHttpClientCache httpClientCache, IConfiguration config)
     {
@@ -27,11 +28,11 @@ public sealed class ProductBoardOpenApiHttpClient : IProductBoardOpenApiHttpClie
 
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
-        return _httpClientCache.Get(nameof(ProductBoardOpenApiHttpClient), (config: _config, baseUrl: _config["ProductBoard:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
+        return _httpClientCache.Get(_cacheKey, (config: _config, baseUrl: _config["ProductBoard:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
             var apiKey = state.config.GetValueStrict<string>("ProductBoard:ApiKey");
-            string authHeaderName = state.config["ProductBoard:AuthHeaderName"] ?? "Bearer {token}";
-            string authHeaderValueTemplate = state.config["ProductBoard:AuthHeaderValueTemplate"] ?? "{token}";
+            string authHeaderName = state.config["ProductBoard:AuthHeaderName"] ?? "Authorization";
+            string authHeaderValueTemplate = state.config["ProductBoard:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
 
             return new HttpClientOptions
@@ -45,20 +46,13 @@ public sealed class ProductBoardOpenApiHttpClient : IProductBoardOpenApiHttpClie
         }, cancellationToken);
     }
 
-    /// <summary>
-    /// Releases resources used by the current instance.
-    /// </summary>
     public void Dispose()
     {
-        _httpClientCache.RemoveSync(nameof(ProductBoardOpenApiHttpClient));
+        _httpClientCache.RemoveSync(_cacheKey);
     }
 
-    /// <summary>
-    /// Asynchronously releases resources used by the current instance.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask DisposeAsync()
     {
-        return _httpClientCache.Remove(nameof(ProductBoardOpenApiHttpClient));
+        return _httpClientCache.Remove(_cacheKey);
     }
 }
