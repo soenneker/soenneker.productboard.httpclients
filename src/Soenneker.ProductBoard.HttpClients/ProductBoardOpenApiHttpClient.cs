@@ -11,6 +11,7 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.ProductBoard.HttpClients;
 
+/// <inheritdoc cref="IProductBoardOpenApiHttpClient" />
 public sealed class ProductBoardOpenApiHttpClient : IProductBoardOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
