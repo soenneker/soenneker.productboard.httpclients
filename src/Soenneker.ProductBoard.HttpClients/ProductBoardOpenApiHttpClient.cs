@@ -31,7 +31,7 @@ public sealed class ProductBoardOpenApiHttpClient : IProductBoardOpenApiHttpClie
     {
         return _httpClientCache.Get(_cacheKey, (config: _config, baseUrl: _config["ProductBoard:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
-            var apiKey = state.config.GetValueStrict<string>("ProductBoard:ApiKey");
+            var apiKey = state.config.GetStringStrict("ProductBoard:ApiKey");
             string authHeaderName = state.config["ProductBoard:AuthHeaderName"] ?? "Authorization";
             string authHeaderValueTemplate = state.config["ProductBoard:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
